@@ -1,0 +1,145 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// MODEL: User
+// ─────────────────────────────────────────────
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String   // hashed dengan bcrypt
+  role      Role     @default(USER)
+  avatar    String?  // path avatar (opsional)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  uploads  Upload[]
+  sessions Session[]
+  accounts Account[]
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+// ─────────────────────────────────────────────
+// MODEL: Upload
+// Merepresentasikan satu sesi upload
+// (bisa berupa satu file, multi-file, atau satu folder)
+// ─────────────────────────────────────────────
+model Upload {
+  id         String       @id @default(cuid())
+  userId     String
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  uploadType UploadType   // FILE | FOLDER
+  folderName String?      // nama folder jika uploadType = FOLDER
+  totalSize  BigInt       @default(0) // total ukuran semua file dalam upload ini (bytes)
+  fileCount  Int          @default(0) // jumlah file dalam upload ini
+  status     UploadStatus @default(PENDING)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  files File[]
+
+  @@index([userId])
+  @@map("uploads")
+}
+
+enum UploadType {
+  FILE   // upload satu atau lebih file lepas
+  FOLDER // upload satu folder (dengan sub-struktur)
+}
+
+enum UploadStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+// ─────────────────────────────────────────────
+// MODEL: File
+// Merepresentasikan satu file individual
+// ─────────────────────────────────────────────
+model File {
+  id           String  @id @default(cuid())
+  uploadId     String
+  upload       Upload  @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+
+  originalName  String  // nama asli file saat diupload
+  storedName    String  // nama file yang disimpan di disk (uuid-based)
+  storagePath   String  // absolute path di server
+  relativePath  String? // path relatif dalam folder (untuk struktur folder)
+  mimeType      String  // MIME type (e.g. image/png, application/pdf)
+  extension     String  // ekstensi file (e.g. .pdf, .mp4)
+  size          BigInt  // ukuran file dalam bytes
+  checksum      String? // MD5/SHA256 hash untuk verifikasi integritas
+  isViewable    Boolean @default(false) // true jika bisa dipreview (PDF, gambar, video)
+  downloadCount Int     @default(0) // berapa kali file didownload
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([uploadId])
+  @@map("files")
+}
+
+// ─────────────────────────────────────────────
+// MODEL: Session (NextAuth)
+// ─────────────────────────────────────────────
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires      DateTime
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+// ─────────────────────────────────────────────
+// MODEL: Account (NextAuth)
+// ─────────────────────────────────────────────
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.MediumText
+  access_token      String? @db.MediumText
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.MediumText
+  session_state     String?
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+// ─────────────────────────────────────────────
+// MODEL: VerificationToken (NextAuth)
+// ─────────────────────────────────────────────
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}

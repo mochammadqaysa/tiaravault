@@ -1,0 +1,16 @@
+.env
+.env.local
+.env.production
+.env.*.local
+.env.docker
+
+node_modules/
+.next/
+out/
+dist/
+
+*.log
+npm-debug.log*
+
+.DS_Store
+Thumbs.db
