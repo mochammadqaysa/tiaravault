@@ -41,11 +41,19 @@ export function BottomNav({ userRole }: BottomNavProps) {
       <GlassSurface
         width="100%"
         height="100%"
-        borderRadius={9999}
-        blur={24}
-        opacity={0.6}
+        borderRadius={50}
+        borderWidth={0.07}
+        saturation={1}
+        blur={11}
+        displace={0.5}
+        distortionScale={-180}
+        redOffset={0}
+        greenOffset={10}
+        blueOffset={20}
         brightness={50}
-        backgroundOpacity={0.02}
+        backgroundOpacity={0.1}
+        opacity={0.93}
+        mixBlendMode="screen"
         className="shadow-[0_8px_32px_rgba(0,0,0,0.1)] ring-1 ring-[hsl(var(--border))/0.1]"
       >
         <nav className="flex items-center gap-1 px-2 py-2 relative z-10">
@@ -67,9 +75,9 @@ export function BottomNav({ userRole }: BottomNavProps) {
               </Link>
             );
           })}
-          
+
           <div className="w-px h-8 bg-[hsl(var(--border))] mx-1" />
-          
+
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             title="Sign out"
