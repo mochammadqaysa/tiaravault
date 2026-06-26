@@ -37,8 +37,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install prisma globally untuk menjalankan migration
-RUN npm install -g prisma
+# Install prisma globally untuk menjalankan migration (Pin versi 6.x agar tidak error Prisma 7)
+RUN npm install -g prisma@6.19.3
 
 # Buat non-root user untuk keamanan
 RUN addgroup --system --gid 1001 nodejs
