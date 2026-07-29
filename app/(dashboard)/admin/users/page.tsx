@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Users, Shield, Trash2, RefreshCw, Crown } from "lucide-react";
+import { Users, Trash2, RefreshCw, Crown, UserPlus, Edit3, Key, Eye, EyeOff } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Modal } from "@/components/ui/Modal";
 import { formatBytes, formatRelativeDate } from "@/lib/fileUtils";
 
 interface UserData {
@@ -22,6 +23,29 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Modal states
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+
+  // Form states
+  const [addName, setAddName] = useState("");
+  const [addEmail, setAddEmail] = useState("");
+  const [addPassword, setAddPassword] = useState("");
+  const [addRole, setAddRole] = useState<"USER" | "ADMIN">("USER");
+
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editRole, setEditRole] = useState<"USER" | "ADMIN">("USER");
+
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -55,8 +79,148 @@ export default function AdminUsersPage() {
     }
   };
 
+  // Handle Add User
+  const handleAddUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg("");
+    if (!addName || !addEmail || !addPassword) {
+      setErrorMsg("Semua field wajib diisi");
+      return;
+    }
+    if (addPassword.length < 6) {
+      setErrorMsg("Password minimal 6 karakter");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: addName,
+          email: addEmail,
+          password: addPassword,
+          role: addRole,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMsg(data.error || "Gagal membuat user");
+        return;
+      }
+
+      setIsAddOpen(false);
+      setAddName("");
+      setAddEmail("");
+      setAddPassword("");
+      setAddRole("USER");
+      fetchUsers();
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Handle Edit User
+  const openEditModal = (user: UserData) => {
+    setSelectedUser(user);
+    setEditName(user.name);
+    setEditEmail(user.email);
+    setEditRole(user.role);
+    setErrorMsg("");
+    setIsEditOpen(true);
+  };
+
+  const handleEditUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedUser) return;
+    setErrorMsg("");
+    if (!editName || !editEmail) {
+      setErrorMsg("Nama dan email wajib diisi");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: selectedUser.id,
+          name: editName,
+          email: editEmail,
+          role: editRole,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMsg(data.error || "Gagal memperbarui user");
+        return;
+      }
+
+      setIsEditOpen(false);
+      setSelectedUser(null);
+      fetchUsers();
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Handle Change Password
+  const openPasswordModal = (user: UserData) => {
+    setSelectedUser(user);
+    setNewPassword("");
+    setConfirmPassword("");
+    setErrorMsg("");
+    setIsPasswordOpen(true);
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedUser) return;
+    setErrorMsg("");
+    if (!newPassword) {
+      setErrorMsg("Password baru wajib diisi");
+      return;
+    }
+    if (newPassword.length < 6) {
+      setErrorMsg("Password minimal 6 karakter");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setErrorMsg("Konfirmasi password tidak cocok");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: selectedUser.id,
+          password: newPassword,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMsg(data.error || "Gagal mengubah password");
+        return;
+      }
+
+      setIsPasswordOpen(false);
+      setSelectedUser(null);
+      alert("Password berhasil diubah");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const totalStorage = users.reduce(
-    (s, u) => s + BigInt(u.storageBytes || 0), BigInt(0)
+    (s: bigint, u: UserData) => s + BigInt(u.storageBytes || 0), BigInt(0)
   );
 
   return (
@@ -76,10 +240,24 @@ export default function AdminUsersPage() {
             </p>
           </div>
         </div>
-        <Button variant="ghost" size="sm" onClick={fetchUsers} disabled={loading}>
-          <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-          Refresh
-        </Button>
+        
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            onClick={() => {
+              setErrorMsg("");
+              setIsAddOpen(true);
+            }}
+            className="flex items-center gap-1.5"
+          >
+            <UserPlus size={14} />
+            Tambah User
+          </Button>
+          <Button variant="ghost" size="sm" onClick={fetchUsers} disabled={loading}>
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {loading ? (
@@ -144,23 +322,276 @@ export default function AdminUsersPage() {
                   {user.role}
                 </Badge>
 
-                {/* Delete */}
-                {user.role !== "ADMIN" && (
+                {/* Actions */}
+                <div className="flex items-center gap-1 flex-shrink-0">
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleDelete(user.id, user.name)}
-                    loading={deletingId === user.id}
-                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 flex-shrink-0"
+                    onClick={() => openEditModal(user)}
+                    title="Edit Profil"
+                    className="text-[hsl(var(--text-secondary))] hover:text-[hsl(var(--text-primary))]"
                   >
-                    <Trash2 size={14} />
+                    <Edit3 size={14} />
                   </Button>
-                )}
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => openPasswordModal(user)}
+                    title="Ubah Password"
+                    className="text-[hsl(var(--text-secondary))] hover:text-[hsl(var(--text-primary))]"
+                  >
+                    <Key size={14} />
+                  </Button>
+
+                  {user.role !== "ADMIN" && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(user.id, user.name)}
+                      loading={deletingId === user.id}
+                      title="Hapus User"
+                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                    >
+                      <Trash2 size={14} />
+                    </Button>
+                  )}
+                </div>
               </div>
             </Card>
           ))}
         </div>
       )}
+
+      {/* Modal Tambah User */}
+      <Modal
+        isOpen={isAddOpen}
+        onClose={() => setIsAddOpen(false)}
+        title="Tambah User Baru"
+      >
+        <form onSubmit={handleAddUser} className="space-y-4">
+          {errorMsg && (
+            <div className="p-3 text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl">
+              {errorMsg}
+            </div>
+          )}
+
+          <div>
+            <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
+              Nama Lengkap
+            </label>
+            <input
+              type="text"
+              value={addName}
+              onChange={(e) => setAddName(e.target.value)}
+              placeholder="Contoh: John Doe"
+              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              value={addEmail}
+              onChange={(e) => setAddEmail(e.target.value)}
+              placeholder="user@example.com"
+              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={addPassword}
+                onChange={(e) => setAddPassword(e.target.value)}
+                placeholder="Minimal 6 karakter"
+                className="w-full px-3 py-2 pr-10 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[hsl(var(--text-secondary))]"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
+              Role
+            </label>
+            <select
+              value={addRole}
+              onChange={(e) => setAddRole(e.target.value as "USER" | "ADMIN")}
+              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+            >
+              <option value="USER">User biasa (USER)</option>
+              <option value="ADMIN">Administrator (ADMIN)</option>
+            </select>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setIsAddOpen(false)}
+              disabled={submitting}
+            >
+              Batal
+            </Button>
+            <Button type="submit" loading={submitting}>
+              Simpan User
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Modal Edit Profil User */}
+      <Modal
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        title={`Edit Profil - ${selectedUser?.name}`}
+      >
+        <form onSubmit={handleEditUser} className="space-y-4">
+          {errorMsg && (
+            <div className="p-3 text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl">
+              {errorMsg}
+            </div>
+          )}
+
+          <div>
+            <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
+              Nama Lengkap
+            </label>
+            <input
+              type="text"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              value={editEmail}
+              onChange={(e) => setEditEmail(e.target.value)}
+              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
+              Role
+            </label>
+            <select
+              value={editRole}
+              onChange={(e) => setEditRole(e.target.value as "USER" | "ADMIN")}
+              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+            >
+              <option value="USER">User biasa (USER)</option>
+              <option value="ADMIN">Administrator (ADMIN)</option>
+            </select>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setIsEditOpen(false)}
+              disabled={submitting}
+            >
+              Batal
+            </Button>
+            <Button type="submit" loading={submitting}>
+              Update Profil
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Modal Ubah Password */}
+      <Modal
+        isOpen={isPasswordOpen}
+        onClose={() => setIsPasswordOpen(false)}
+        title={`Ubah Password - ${selectedUser?.name}`}
+      >
+        <form onSubmit={handleChangePassword} className="space-y-4">
+          {errorMsg && (
+            <div className="p-3 text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl">
+              {errorMsg}
+            </div>
+          )}
+
+          <div>
+            <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
+              Password Baru
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Minimal 6 karakter"
+                className="w-full px-3 py-2 pr-10 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[hsl(var(--text-secondary))]"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
+              Konfirmasi Password Baru
+            </label>
+            <input
+              type={showPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Ulangi password baru"
+              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              required
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setIsPasswordOpen(false)}
+              disabled={submitting}
+            >
+              Batal
+            </Button>
+            <Button type="submit" loading={submitting}>
+              Ubah Password
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
+

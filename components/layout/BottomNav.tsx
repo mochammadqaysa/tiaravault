@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Upload,
   FolderOpen,
+  User,
   Shield,
   Users,
   LogOut,
@@ -17,6 +18,7 @@ const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/upload", icon: Upload, label: "Upload" },
   { href: "/files", icon: FolderOpen, label: "Files" },
+  { href: "/profile", icon: User, label: "Profil Saya" },
 ];
 
 const adminItems = [
