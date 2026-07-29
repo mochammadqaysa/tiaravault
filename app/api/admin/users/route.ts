@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
       select: {
         id: true,
         name: true,
+        username: true,
         email: true,
         role: true,
         createdAt: true,
@@ -34,7 +35,8 @@ export async function GET(req: NextRequest) {
     const usersWithStats = users.map((u) => ({
       id: u.id,
       name: u.name,
-      email: u.email,
+      username: u.username,
+      email: u.email || "",
       role: u.role,
       createdAt: u.createdAt,
       uploadCount: u._count.uploads,
@@ -62,11 +64,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { name, email, password, role } = await req.json();
+    const { name, username, email, password, role } = await req.json();
 
-    if (!name || !email || !password) {
+    if (!name || !username || !password) {
       return NextResponse.json(
-        { error: "Nama, email, dan password wajib diisi" },
+        { error: "Nama, username, dan password wajib diisi" },
+        { status: 400 }
+      );
+    }
+
+    const cleanUsername = username.toLowerCase().trim();
+
+    if (cleanUsername.length < 3) {
+      return NextResponse.json(
+        { error: "Username minimal 3 karakter" },
         { status: 400 }
       );
     }
@@ -78,13 +89,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email: email.toLowerCase().trim() },
+    const existingUsername = await prisma.user.findUnique({
+      where: { username: cleanUsername },
     });
 
-    if (existingUser) {
+    if (existingUsername) {
       return NextResponse.json(
-        { error: "Email sudah terdaftar" },
+        { error: "Username sudah terdaftar" },
         { status: 400 }
       );
     }
@@ -94,13 +105,15 @@ export async function POST(req: NextRequest) {
     const newUser = await prisma.user.create({
       data: {
         name: name.trim(),
-        email: email.toLowerCase().trim(),
+        username: cleanUsername,
+        email: email ? email.toLowerCase().trim() : null,
         password: hashedPassword,
         role: role === "ADMIN" ? "ADMIN" : "USER",
       },
       select: {
         id: true,
         name: true,
+        username: true,
         email: true,
         role: true,
         createdAt: true,
@@ -125,25 +138,27 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { userId, name, email, role } = await req.json();
+    const { userId, name, username, email, role } = await req.json();
 
-    if (!userId || !name || !email) {
+    if (!userId || !name || !username) {
       return NextResponse.json(
-        { error: "User ID, nama, dan email wajib diisi" },
+        { error: "User ID, nama, dan username wajib diisi" },
         { status: 400 }
       );
     }
 
-    const emailCheck = await prisma.user.findFirst({
+    const cleanUsername = username.toLowerCase().trim();
+
+    const usernameCheck = await prisma.user.findFirst({
       where: {
-        email: email.toLowerCase().trim(),
+        username: cleanUsername,
         NOT: { id: userId },
       },
     });
 
-    if (emailCheck) {
+    if (usernameCheck) {
       return NextResponse.json(
-        { error: "Email sudah digunakan oleh user lain" },
+        { error: "Username sudah digunakan oleh user lain" },
         { status: 400 }
       );
     }
@@ -152,12 +167,14 @@ export async function PUT(req: NextRequest) {
       where: { id: userId },
       data: {
         name: name.trim(),
-        email: email.toLowerCase().trim(),
+        username: cleanUsername,
+        email: email ? email.toLowerCase().trim() : null,
         role: role === "ADMIN" ? "ADMIN" : "USER",
       },
       select: {
         id: true,
         name: true,
+        username: true,
         email: true,
         role: true,
       },

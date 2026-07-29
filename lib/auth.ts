@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 const loginSchema = z.object({
-  email: z.string().email(),
+  username: z.string().min(1, "Username wajib diisi"),
   password: z.string().min(6),
 });
 
@@ -18,15 +18,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Credentials({
       name: "credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         try {
-          const { email, password } = loginSchema.parse(credentials);
+          const { username, password } = loginSchema.parse(credentials);
 
           const user = await prisma.user.findUnique({
-            where: { email },
+            where: { username: username.toLowerCase().trim() },
           });
 
           if (!user || !user.password) return null;
@@ -37,6 +37,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return {
             id: user.id,
             name: user.name,
+            username: user.username,
             email: user.email,
             role: user.role,
             image: user.avatar,
@@ -51,6 +52,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.username = (user as any).username;
         token.role = (user as any).role || "USER";
       }
       return token;
@@ -58,6 +60,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (session.user && token) {
         session.user.id = token.id as string;
+        (session.user as any).username = token.username as string;
         (session.user as any).role = token.role as string;
       }
       return session;

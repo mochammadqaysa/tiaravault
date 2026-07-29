@@ -11,6 +11,7 @@ import { formatBytes, formatRelativeDate } from "@/lib/fileUtils";
 interface UserData {
   id: string;
   name: string;
+  username: string;
   email: string;
   role: "USER" | "ADMIN";
   createdAt: string;
@@ -32,11 +33,13 @@ export default function AdminUsersPage() {
 
   // Form states
   const [addName, setAddName] = useState("");
+  const [addUsername, setAddUsername] = useState("");
   const [addEmail, setAddEmail] = useState("");
   const [addPassword, setAddPassword] = useState("");
   const [addRole, setAddRole] = useState<"USER" | "ADMIN">("USER");
 
   const [editName, setEditName] = useState("");
+  const [editUsername, setEditUsername] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editRole, setEditRole] = useState<"USER" | "ADMIN">("USER");
 
@@ -83,8 +86,12 @@ export default function AdminUsersPage() {
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
-    if (!addName || !addEmail || !addPassword) {
-      setErrorMsg("Semua field wajib diisi");
+    if (!addName || !addUsername || !addPassword) {
+      setErrorMsg("Nama, username, dan password wajib diisi");
+      return;
+    }
+    if (addUsername.length < 3) {
+      setErrorMsg("Username minimal 3 karakter");
       return;
     }
     if (addPassword.length < 6) {
@@ -99,6 +106,7 @@ export default function AdminUsersPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: addName,
+          username: addUsername,
           email: addEmail,
           password: addPassword,
           role: addRole,
@@ -113,6 +121,7 @@ export default function AdminUsersPage() {
 
       setIsAddOpen(false);
       setAddName("");
+      setAddUsername("");
       setAddEmail("");
       setAddPassword("");
       setAddRole("USER");
@@ -126,7 +135,8 @@ export default function AdminUsersPage() {
   const openEditModal = (user: UserData) => {
     setSelectedUser(user);
     setEditName(user.name);
-    setEditEmail(user.email);
+    setEditUsername(user.username);
+    setEditEmail(user.email || "");
     setEditRole(user.role);
     setErrorMsg("");
     setIsEditOpen(true);
@@ -136,8 +146,8 @@ export default function AdminUsersPage() {
     e.preventDefault();
     if (!selectedUser) return;
     setErrorMsg("");
-    if (!editName || !editEmail) {
-      setErrorMsg("Nama dan email wajib diisi");
+    if (!editName || !editUsername) {
+      setErrorMsg("Nama dan username wajib diisi");
       return;
     }
 
@@ -149,6 +159,7 @@ export default function AdminUsersPage() {
         body: JSON.stringify({
           userId: selectedUser.id,
           name: editName,
+          username: editUsername,
           email: editEmail,
           role: editRole,
         }),
@@ -283,6 +294,9 @@ export default function AdminUsersPage() {
                     <p className="text-sm font-semibold text-[hsl(var(--text-primary))] truncate">
                       {user.name}
                     </p>
+                    <span className="text-xs text-[hsl(var(--accent))] font-medium">
+                      @{user.username}
+                    </span>
                     {user.role === "ADMIN" && (
                       <Badge variant="info">
                         <Crown size={10} />
@@ -290,9 +304,11 @@ export default function AdminUsersPage() {
                       </Badge>
                     )}
                   </div>
-                  <p className="text-xs text-[hsl(var(--text-secondary))] truncate">
-                    {user.email}
-                  </p>
+                  {user.email && (
+                    <p className="text-xs text-[hsl(var(--text-secondary))] truncate">
+                      {user.email}
+                    </p>
+                  )}
                 </div>
 
                 {/* Stats */}
@@ -392,7 +408,21 @@ export default function AdminUsersPage() {
 
           <div>
             <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
-              Email
+              Username (untuk Login)
+            </label>
+            <input
+              type="text"
+              value={addUsername}
+              onChange={(e) => setAddUsername(e.target.value.toLowerCase().replace(/\s+/g, ""))}
+              placeholder="johndoe"
+              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
+              Email (Opsional)
             </label>
             <input
               type="email"
@@ -400,7 +430,6 @@ export default function AdminUsersPage() {
               onChange={(e) => setAddEmail(e.target.value)}
               placeholder="user@example.com"
               className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
-              required
             />
           </div>
 
@@ -485,14 +514,26 @@ export default function AdminUsersPage() {
 
           <div>
             <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
-              Email
+              Username
+            </label>
+            <input
+              type="text"
+              value={editUsername}
+              onChange={(e) => setEditUsername(e.target.value.toLowerCase().replace(/\s+/g, ""))}
+              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
+              Email (Opsional)
             </label>
             <input
               type="email"
               value={editEmail}
               onChange={(e) => setEditEmail(e.target.value)}
               className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
-              required
             />
           </div>
 
@@ -594,4 +635,5 @@ export default function AdminUsersPage() {
     </div>
   );
 }
+
 

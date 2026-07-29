@@ -5,13 +5,13 @@ import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 
 export async function loginAction(prevState: any, formData: FormData) {
-  const email = formData.get("email") as string;
+  const username = formData.get("username") as string;
   const password = formData.get("password") as string;
   const redirectTo = (formData.get("redirectTo") as string) || "/dashboard";
 
   try {
     await signIn("credentials", {
-      email,
+      username,
       password,
       redirectTo,
     });
@@ -19,7 +19,7 @@ export async function loginAction(prevState: any, formData: FormData) {
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
-          return { error: "Email atau password salah." };
+          return { error: "Username atau password salah." };
         default:
           return { error: "Terjadi kesalahan pada server." };
       }

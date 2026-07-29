@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
       select: {
         id: true,
         name: true,
+        username: true,
         email: true,
         role: true,
         createdAt: true,
@@ -37,7 +38,8 @@ export async function GET(req: NextRequest) {
       user: {
         id: user.id,
         name: user.name,
-        email: user.email,
+        username: user.username,
+        email: user.email || "",
         role: user.role,
         createdAt: user.createdAt,
         uploadCount: user._count.uploads,
@@ -51,7 +53,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// PUT update logged-in user profile (name, email)
+// PUT update logged-in user profile (name, username, email)
 export async function PUT(req: NextRequest) {
   try {
     const session = await auth();
@@ -59,31 +61,35 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, email } = await req.json();
-    if (!name || !email) {
-      return NextResponse.json({ error: "Nama dan email wajib diisi" }, { status: 400 });
+    const { name, username, email } = await req.json();
+    if (!name || !username) {
+      return NextResponse.json({ error: "Nama dan username wajib diisi" }, { status: 400 });
     }
 
-    const emailCheck = await prisma.user.findFirst({
+    const cleanUsername = username.toLowerCase().trim();
+
+    const usernameCheck = await prisma.user.findFirst({
       where: {
-        email: email.toLowerCase().trim(),
+        username: cleanUsername,
         NOT: { id: session.user.id },
       },
     });
 
-    if (emailCheck) {
-      return NextResponse.json({ error: "Email sudah digunakan oleh user lain" }, { status: 400 });
+    if (usernameCheck) {
+      return NextResponse.json({ error: "Username sudah digunakan oleh user lain" }, { status: 400 });
     }
 
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
       data: {
         name: name.trim(),
-        email: email.toLowerCase().trim(),
+        username: cleanUsername,
+        email: email ? email.toLowerCase().trim() : null,
       },
       select: {
         id: true,
         name: true,
+        username: true,
         email: true,
         role: true,
       },

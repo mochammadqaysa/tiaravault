@@ -9,9 +9,10 @@ async function main() {
   // Buat admin user
   const adminPassword = await bcrypt.hash("admin123", 12);
   const admin = await prisma.user.upsert({
-    where: { email: "admin@tiaravault.local" },
+    where: { username: "admin" },
     update: {},
     create: {
+      username: "admin",
       name: "Admin TiaraVault",
       email: "admin@tiaravault.local",
       password: adminPassword,
@@ -19,14 +20,15 @@ async function main() {
     },
   });
 
-  console.log(`✅ Admin user created: ${admin.email}`);
+  console.log(`✅ Admin user created: @${admin.username}`);
 
   // Buat user biasa untuk testing
   const userPassword = await bcrypt.hash("user123", 12);
   const user = await prisma.user.upsert({
-    where: { email: "user@tiaravault.local" },
+    where: { username: "user" },
     update: {},
     create: {
+      username: "user",
       name: "Demo User",
       email: "user@tiaravault.local",
       password: userPassword,
@@ -34,11 +36,11 @@ async function main() {
     },
   });
 
-  console.log(`✅ Demo user created: ${user.email}`);
+  console.log(`✅ Demo user created: @${user.username}`);
   console.log("✨ Seeding selesai!");
   console.log("\n📋 Default credentials:");
-  console.log("  Admin  → admin@tiaravault.local / admin123");
-  console.log("  User   → user@tiaravault.local  / user123");
+  console.log("  Admin  → admin / admin123");
+  console.log("  User   → user  / user123");
 }
 
 main()

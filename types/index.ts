@@ -1,7 +1,8 @@
 export interface UserSession {
   id: string;
   name: string;
-  email: string;
+  username: string;
+  email?: string | null;
   role: "USER" | "ADMIN";
   avatar?: string | null;
 }
@@ -37,7 +38,8 @@ export interface UploadItem {
   user?: {
     id: string;
     name: string;
-    email: string;
+    username: string;
+    email?: string | null;
   };
 }
 

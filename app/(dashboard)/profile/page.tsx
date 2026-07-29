@@ -10,7 +10,8 @@ import { formatBytes, formatRelativeDate } from "@/lib/fileUtils";
 interface ProfileData {
   id: string;
   name: string;
-  email: string;
+  username: string;
+  email?: string | null;
   role: "USER" | "ADMIN";
   createdAt: string;
   uploadCount: number;
@@ -24,6 +25,7 @@ export default function ProfilePage() {
 
   // Form states
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
 
   const [oldPassword, setOldPassword] = useState("");
@@ -46,7 +48,8 @@ export default function ProfilePage() {
         if (data.user) {
           setProfile(data.user);
           setName(data.user.name);
-          setEmail(data.user.email);
+          setUsername(data.user.username);
+          setEmail(data.user.email || "");
         }
       }
     } finally {
@@ -61,8 +64,8 @@ export default function ProfilePage() {
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setProfileMsg(null);
-    if (!name || !email) {
-      setProfileMsg({ type: "error", text: "Nama dan email wajib diisi" });
+    if (!name || !username) {
+      setProfileMsg({ type: "error", text: "Nama dan username wajib diisi" });
       return;
     }
 
@@ -71,7 +74,7 @@ export default function ProfilePage() {
       const res = await fetch("/api/user/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({ name, username, email }),
       });
 
       const data = await res.json();
@@ -147,11 +150,16 @@ export default function ProfilePage() {
               <h1 className="text-2xl font-bold text-[hsl(var(--text-primary))]">
                 {profile?.name}
               </h1>
+              <span className="text-sm font-medium text-[hsl(var(--accent))]">
+                @{profile?.username}
+              </span>
               <Badge variant={profile?.role === "ADMIN" ? "info" : "default"}>
                 {profile?.role}
               </Badge>
             </div>
-            <p className="text-sm text-[hsl(var(--text-secondary))]">{profile?.email}</p>
+            {profile?.email && (
+              <p className="text-sm text-[hsl(var(--text-secondary))]">{profile.email}</p>
+            )}
 
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-6 pt-2 text-xs text-[hsl(var(--text-secondary))]">
               <div className="flex items-center gap-1.5">
@@ -210,14 +218,26 @@ export default function ProfilePage() {
 
             <div>
               <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
-                Email
+                Username
+              </label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/\s+/g, ""))}
+                className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-[hsl(var(--text-secondary))] mb-1">
+                Email (Opsional)
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
-                required
               />
             </div>
 

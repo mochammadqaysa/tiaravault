@@ -63,11 +63,13 @@ export default function LoginPage() {
               <div className="space-y-4">
                 <div>
                   <input
-                    type="email"
-                    name="email"
+                    type="text"
+                    name="username"
                     defaultValue=""
-                    placeholder="Email"
+                    placeholder="Username"
                     required
+                    autoCapitalize="none"
+                    autoCorrect="off"
                     className="w-full px-4 py-3.5 text-[17px] bg-[hsl(var(--surface-2))] border border-[hsl(var(--border))] rounded-[14px] text-[hsl(var(--text-primary))] placeholder-[hsl(var(--text-secondary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))] transition-all"
                   />
                 </div>
