@@ -61,24 +61,24 @@ export function Modal({
       }}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm animate-fade-in-up" />
+      <div className="absolute inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md animate-fade-in-up" />
 
       {/* Modal content */}
       <div
         className={cn(
-          "relative w-full rounded-2xl bg-[hsl(var(--surface-2))/0.6] backdrop-blur-[48px] shadow-[0_24px_64px_rgba(0,0,0,0.2)] ring-1 ring-[hsl(var(--border))/0.1] animate-fade-in-up",
+          "relative w-full rounded-2xl bg-[hsl(var(--surface))] dark:bg-[hsl(var(--surface-2))] border border-[hsl(var(--border))] shadow-2xl animate-fade-in-up",
           sizes[size],
           className
         )}
       >
         {title && (
-          <div className="flex items-center justify-between p-6 opacity-80">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-[hsl(var(--border))]">
             <h2 className="text-lg font-semibold text-[hsl(var(--text-primary))]">
               {title}
             </h2>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-[hsl(var(--text-secondary))] hover:text-[hsl(var(--text-primary))] hover:bg-[hsl(var(--surface-2))] transition-colors"
+              className="p-1.5 rounded-lg text-[hsl(var(--text-secondary))] hover:text-[hsl(var(--text-primary))] hover:bg-[hsl(var(--surface-2))] dark:hover:bg-[hsl(var(--surface))] transition-colors"
             >
               <X size={18} />
             </button>
@@ -87,7 +87,7 @@ export function Modal({
         {!title && (
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 p-1.5 rounded-lg text-[hsl(var(--text-secondary))] hover:text-[hsl(var(--text-primary))] hover:bg-[hsl(var(--surface-2))] transition-colors"
+            className="absolute top-4 right-4 z-10 p-1.5 rounded-lg text-[hsl(var(--text-secondary))] hover:text-[hsl(var(--text-primary))] hover:bg-[hsl(var(--surface-2))] dark:hover:bg-[hsl(var(--surface))] transition-colors"
           >
             <X size={18} />
           </button>

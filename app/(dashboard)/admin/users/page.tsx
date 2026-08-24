@@ -401,7 +401,7 @@ export default function AdminUsersPage() {
               value={addName}
               onChange={(e) => setAddName(e.target.value)}
               placeholder="Contoh: John Doe"
-              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              className="w-full px-3.5 py-2.5 text-sm bg-[hsl(var(--surface-2))] dark:bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] transition-all"
               required
             />
           </div>
@@ -415,7 +415,7 @@ export default function AdminUsersPage() {
               value={addUsername}
               onChange={(e) => setAddUsername(e.target.value.toLowerCase().replace(/\s+/g, ""))}
               placeholder="johndoe"
-              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              className="w-full px-3.5 py-2.5 text-sm bg-[hsl(var(--surface-2))] dark:bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] transition-all"
               required
             />
           </div>
@@ -429,7 +429,7 @@ export default function AdminUsersPage() {
               value={addEmail}
               onChange={(e) => setAddEmail(e.target.value)}
               placeholder="user@example.com"
-              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              className="w-full px-3.5 py-2.5 text-sm bg-[hsl(var(--surface-2))] dark:bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] transition-all"
             />
           </div>
 
@@ -443,7 +443,7 @@ export default function AdminUsersPage() {
                 value={addPassword}
                 onChange={(e) => setAddPassword(e.target.value)}
                 placeholder="Minimal 6 karakter"
-                className="w-full px-3 py-2 pr-10 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+                className="w-full px-3.5 py-2.5 pr-10 text-sm bg-[hsl(var(--surface-2))] dark:bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] transition-all"
                 required
               />
               <button
@@ -463,7 +463,7 @@ export default function AdminUsersPage() {
             <select
               value={addRole}
               onChange={(e) => setAddRole(e.target.value as "USER" | "ADMIN")}
-              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              className="w-full px-3.5 py-2.5 text-sm bg-[hsl(var(--surface-2))] dark:bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] transition-all"
             >
               <option value="USER">User biasa (USER)</option>
               <option value="ADMIN">Administrator (ADMIN)</option>
@@ -507,7 +507,7 @@ export default function AdminUsersPage() {
               type="text"
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              className="w-full px-3.5 py-2.5 text-sm bg-[hsl(var(--surface-2))] dark:bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] transition-all"
               required
             />
           </div>
@@ -520,7 +520,7 @@ export default function AdminUsersPage() {
               type="text"
               value={editUsername}
               onChange={(e) => setEditUsername(e.target.value.toLowerCase().replace(/\s+/g, ""))}
-              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              className="w-full px-3.5 py-2.5 text-sm bg-[hsl(var(--surface-2))] dark:bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] transition-all"
               required
             />
           </div>
@@ -533,7 +533,7 @@ export default function AdminUsersPage() {
               type="email"
               value={editEmail}
               onChange={(e) => setEditEmail(e.target.value)}
-              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              className="w-full px-3.5 py-2.5 text-sm bg-[hsl(var(--surface-2))] dark:bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] transition-all"
             />
           </div>
 
@@ -544,7 +544,7 @@ export default function AdminUsersPage() {
             <select
               value={editRole}
               onChange={(e) => setEditRole(e.target.value as "USER" | "ADMIN")}
-              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              className="w-full px-3.5 py-2.5 text-sm bg-[hsl(var(--surface-2))] dark:bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] transition-all"
             >
               <option value="USER">User biasa (USER)</option>
               <option value="ADMIN">Administrator (ADMIN)</option>
@@ -590,7 +590,7 @@ export default function AdminUsersPage() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Minimal 6 karakter"
-                className="w-full px-3 py-2 pr-10 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+                className="w-full px-3.5 py-2.5 pr-10 text-sm bg-[hsl(var(--surface-2))] dark:bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] transition-all"
                 required
               />
               <button
@@ -612,7 +612,7 @@ export default function AdminUsersPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Ulangi password baru"
-              className="w-full px-3 py-2 text-sm bg-[hsl(var(--background))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))]"
+              className="w-full px-3.5 py-2.5 text-sm bg-[hsl(var(--surface-2))] dark:bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-secondary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] transition-all"
               required
             />
           </div>
