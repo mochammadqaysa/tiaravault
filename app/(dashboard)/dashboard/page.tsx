@@ -20,7 +20,7 @@ async function getSummary() {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3001";
   try {
     const res = await fetch(`${baseUrl}/api/summary`, {
       headers: { Cookie: "" },
@@ -94,10 +94,10 @@ export default async function DashboardPage() {
   }
 
   const storageBytes = Number(stats.totalStorageBytes);
-  
+
   let storageValue = storageBytes;
   let storageSuffix = "B";
-  
+
   if (storageBytes >= 1024 * 1024 * 1024 * 1024) {
     storageValue = storageBytes / (1024 * 1024 * 1024 * 1024);
     storageSuffix = "TB";
@@ -115,7 +115,7 @@ export default async function DashboardPage() {
   return (
     <div className="relative min-h-full">
 
-      
+
       <div className="max-w-7xl mx-auto space-y-8 relative z-10">
         {/* Welcome banner */}
         <div className="animate-fade-in-up">
@@ -141,95 +141,95 @@ export default async function DashboardPage() {
             delay={0}
             decimalPlaces={2}
           />
-        <StatsCard
-          title="Total File"
-          value={stats.totalFiles}
-          icon={<Files size={18} />}
-          description="File tersimpan"
-          delay={100}
-        />
-        <StatsCard
-          title="Total Upload"
-          value={stats.totalUploads}
-          icon={<Upload size={18} />}
-          description="Sesi upload"
-          delay={200}
-        />
-        {isAdmin && "totalUsers" in stats && (
           <StatsCard
-            title="Total User"
-            value={(stats as { totalUsers: number }).totalUsers}
-            icon={<Users size={18} />}
-            description="Pengguna aktif"
-            delay={300}
+            title="Total File"
+            value={stats.totalFiles}
+            icon={<Files size={18} />}
+            description="File tersimpan"
+            delay={100}
           />
-        )}
-        {!isAdmin && (
-          <Card className="animate-fade-in-up" style={{ animationDelay: "300ms" } as React.CSSProperties}>
-            <div className="flex flex-col gap-3">
-              <p className="text-xs font-medium text-[hsl(var(--text-secondary))] uppercase tracking-wider">
-                Quick Action
-              </p>
-              <Link href="/upload">
-                <Button variant="primary" size="sm" className="w-full">
-                  <Upload size={14} />
-                  Upload File
-                </Button>
-              </Link>
-            </div>
-          </Card>
-        )}
-      </div>
-
-      {/* Bottom grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent uploads */}
-        <Card className="lg:col-span-2 animate-fade-in-up" style={{ animationDelay: "200ms" } as React.CSSProperties}>
-          <CardHeader>
-            <CardTitle>Upload Terbaru</CardTitle>
-            <Link
-              href="/files"
-              className="text-xs text-[hsl(var(--accent))] hover:underline"
-            >
-              Lihat semua
-            </Link>
-          </CardHeader>
-          <CardContent>
-            <RecentUploads
-              uploads={recentUploads.map((u) => ({
-                ...u,
-                totalSize: u.totalSize.toString(),
-                createdAt: u.createdAt.toISOString(),
-                files: u.files.map((f) => ({
-                  id: f.id,
-                  mimeType: f.mimeType,
-                  originalName: f.originalName,
-                })),
-              }))}
+          <StatsCard
+            title="Total Upload"
+            value={stats.totalUploads}
+            icon={<Upload size={18} />}
+            description="Sesi upload"
+            delay={200}
+          />
+          {isAdmin && "totalUsers" in stats && (
+            <StatsCard
+              title="Total User"
+              value={(stats as { totalUsers: number }).totalUsers}
+              icon={<Users size={18} />}
+              description="Pengguna aktif"
+              delay={300}
             />
-          </CardContent>
-        </Card>
+          )}
+          {!isAdmin && (
+            <Card className="animate-fade-in-up" style={{ animationDelay: "300ms" } as React.CSSProperties}>
+              <div className="flex flex-col gap-3">
+                <p className="text-xs font-medium text-[hsl(var(--text-secondary))] uppercase tracking-wider">
+                  Quick Action
+                </p>
+                <Link href="/upload">
+                  <Button variant="primary" size="sm" className="w-full">
+                    <Upload size={14} />
+                    Upload File
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+          )}
+        </div>
 
-        {/* Storage bar */}
-        <div className="space-y-4">
-          <Card className="animate-fade-in-up" style={{ animationDelay: "300ms" } as React.CSSProperties}>
+        {/* Bottom grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Recent uploads */}
+          <Card className="lg:col-span-2 animate-fade-in-up" style={{ animationDelay: "200ms" } as React.CSSProperties}>
             <CardHeader>
-              <CardTitle>Storage</CardTitle>
+              <CardTitle>Upload Terbaru</CardTitle>
+              <Link
+                href="/files"
+                className="text-xs text-[hsl(var(--accent))] hover:underline"
+              >
+                Lihat semua
+              </Link>
             </CardHeader>
             <CardContent>
-              <StorageBar usedBytes={stats.totalStorageBytes} />
+              <RecentUploads
+                uploads={recentUploads.map((u) => ({
+                  ...u,
+                  totalSize: u.totalSize.toString(),
+                  createdAt: u.createdAt.toISOString(),
+                  files: u.files.map((f) => ({
+                    id: f.id,
+                    mimeType: f.mimeType,
+                    originalName: f.originalName,
+                  })),
+                }))}
+              />
             </CardContent>
           </Card>
 
-          {isAdmin && (
-            <Link href="/upload">
-              <Button variant="primary" size="lg" className="w-full">
-                <Upload size={16} />
-                Upload File Baru
-              </Button>
-            </Link>
-          )}
-        </div>
+          {/* Storage bar */}
+          <div className="space-y-4">
+            <Card className="animate-fade-in-up" style={{ animationDelay: "300ms" } as React.CSSProperties}>
+              <CardHeader>
+                <CardTitle>Storage</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <StorageBar usedBytes={stats.totalStorageBytes} />
+              </CardContent>
+            </Card>
+
+            {isAdmin && (
+              <Link href="/upload">
+                <Button variant="primary" size="lg" className="w-full">
+                  <Upload size={16} />
+                  Upload File Baru
+                </Button>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </div>
