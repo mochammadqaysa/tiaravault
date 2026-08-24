@@ -11,6 +11,11 @@ export const metadata: Metadata = {
   description:
     "Platform backup file aman berbasis web untuk menyimpan dan mengelola file Anda dengan kontrol akses berbasis peran.",
   keywords: ["backup", "file storage", "secure", "upload", "vault"],
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 import { ThemeProvider } from "@/components/theme-provider";

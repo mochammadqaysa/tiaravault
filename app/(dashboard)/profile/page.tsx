@@ -140,7 +140,7 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-fade-in-up">
       {/* Header Profile Card */}
-      <Card className="p-6 md:p-8 bg-gradient-to-br from-[hsl(var(--surface))] to-[hsl(var(--surface-2)/0.6)] border border-[hsl(var(--border))/0.1] shadow-xl">
+      <Card className="p-6 md:p-8 bg-gradient-to-br from-[hsl(var(--surface))] to-[hsl(var(--surface-2)/0.6)] border-0 shadow-lg">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[hsl(var(--accent))] to-[hsl(280_80%_65%)] flex items-center justify-center text-white text-3xl font-bold shadow-lg flex-shrink-0">
             {profile?.name.charAt(0).toUpperCase()}
@@ -181,8 +181,8 @@ export default function ProfilePage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Form Edit Profil */}
-        <Card className="p-6 space-y-4 border border-[hsl(var(--border))/0.1]">
-          <div className="flex items-center gap-2 pb-2 border-b border-[hsl(var(--border))/0.1]">
+        <Card className="p-6 space-y-4 border-0 shadow-lg">
+          <div className="flex items-center gap-2 pb-2">
             <User size={18} className="text-[hsl(var(--accent))]" />
             <h2 className="text-lg font-semibold text-[hsl(var(--text-primary))]">
               Edit Profil Saya
@@ -251,8 +251,8 @@ export default function ProfilePage() {
         </Card>
 
         {/* Form Ubah Password */}
-        <Card className="p-6 space-y-4 border border-[hsl(var(--border))/0.1]">
-          <div className="flex items-center gap-2 pb-2 border-b border-[hsl(var(--border))/0.1]">
+        <Card className="p-6 space-y-4 border-0 shadow-lg">
+          <div className="flex items-center gap-2 pb-2">
             <Key size={18} className="text-[hsl(var(--accent))]" />
             <h2 className="text-lg font-semibold text-[hsl(var(--text-primary))]">
               Ubah Password Saya
