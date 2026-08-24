@@ -375,7 +375,7 @@ DATABASE_URL="mysql://user:password@localhost:3306/tiaravault"
 
 # NextAuth
 NEXTAUTH_SECRET="your-secret-key-here"
-NEXTAUTH_URL="http://localhost:3001"
+NEXTAUTH_URL="http://localhost:3000"
 
 # Storage
 UPLOAD_DIR="/var/tiaravault/uploads"
@@ -383,7 +383,7 @@ MAX_FILE_SIZE_MB=500
 
 # App
 APP_NAME="TiaraVault"
-APP_URL="http://localhost:3001"
+APP_URL="http://localhost:3000"
 ```
 
 ---
@@ -625,11 +625,11 @@ services:
     environment:
       DATABASE_URL: mysql://${MYSQL_USER:-tiaravault}:${MYSQL_PASSWORD:-supersecret}@db:3306/${MYSQL_DATABASE:-tiaravault}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3001}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
       UPLOAD_DIR: /var/tiaravault/uploads
       MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB:-500}
       APP_NAME: TiaraVault
-      APP_URL: ${APP_URL:-http://localhost:3001}
+      APP_URL: ${APP_URL:-http://localhost:3000}
     volumes:
       # Mount volume storage agar data persist saat container di-restart
       - uploads_data:/var/tiaravault/uploads

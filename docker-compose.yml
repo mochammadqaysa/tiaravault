@@ -16,7 +16,7 @@ services:
     networks:
       - tiaravault_net
     ports:
-      - "3001:3001"
+      - "3000:3000"
 
 volumes:
   uploads_data:

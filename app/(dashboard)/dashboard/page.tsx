@@ -20,7 +20,7 @@ async function getSummary() {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3001";
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
   try {
     const res = await fetch(`${baseUrl}/api/summary`, {
       headers: { Cookie: "" },
